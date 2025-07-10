@@ -1,5 +1,6 @@
 ROOTDIR=$(realpath $(dir $(firstword $(MAKEFILE_LIST))))
 PACKAGES_FILE=${ROOTDIR}/kali_packages.txt
+NOUVEAU_BLACKLIST_FILE=/etc/modprobe.d/blacklist-nouveau.conf
 
 ASDF_DIR= $(HOME)/.asdf
 PYTHON=python
@@ -25,9 +26,15 @@ install_packages:
 nvidia_driver: blacklist_nouveau
 	sudo apt update
 	sudo apt upgrade -y
-	sudo apt install nvidia-driver -y
+	sudo apt install nvidia-driver nvidia-cuda-toolkit -y
 
-blacklist_nouveau:
+zerotier:
+	curl -s https://install.zerotier.com | sudo bash
+
+blacklist_nouveau: $(NOUVEAU_BLACKLIST_FILE)
+	echo "Blacklisted!"
+
+$(NOUVEAU_BLACKLIST_FILE):
 	echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
 	echo "options nouveau modeset=0" | sudo tee -a /etc/modprobe.d/blacklist-nouveau.conf
 	sudo update-initramfs -u
