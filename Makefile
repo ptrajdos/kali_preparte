@@ -22,7 +22,17 @@ install_packages:
 	sudo apt upgrade -y
 	sudo xargs -a ${PACKAGES_FILE} apt install -y
 
-$(ASDF_DIR): install_packages
+nvidia_driver: blacklist_nouveau
+	sudo apt update
+	sudo apt upgrade -y
+	sudo apt install nvidia-driver -y
+
+blacklist_nouveau:
+	echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
+	echo "options nouveau modeset=0" | sudo tee -a /etc/modprobe.d/blacklist-nouveau.conf
+	sudo update-initramfs -u
+
+$(ASDF_DIR): install_packages git_cfg
 	@if [ ! -d "$(ASDF_DIR)" ]; then \
 		echo "Cloning asdf..."; \
 		git clone https://github.com/asdf-vm/asdf.git ${ASDF_DIR} --branch v0.14.1;\
