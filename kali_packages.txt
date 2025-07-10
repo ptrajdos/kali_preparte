@@ -10,15 +10,11 @@ curl
 elpa-cmake-mode
 fish
 geany
-geanycurl
 gedit
 git
 gnupg2
 gpg
 htop
-libatlas-base-dev
-libbz2-dev
-libdb-dev
 libffi-dev
 libgdbm-compat-dev
 libgdbm-dev
@@ -38,13 +34,10 @@ mc
 moreutils
 mpich
 nano
-neofetch
 net-tools
 ninja-build
 nmap
 ocl-icd-opencl-dev
-oclgrind
-openjdk-17-jdk
 scala
 shellcheck
 sl
@@ -58,3 +51,7 @@ wget
 xvfb
 zip
 zlib1g-dev
+r-base
+octave
+ffmpeg
+glances

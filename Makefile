@@ -13,6 +13,10 @@ all: install
 install: install_packages
 	@echo "Installing packages from ${PACKAGES_FILE}"
 
+git_cfg:
+	git config --global core.editor "vim"
+	git config --global credential.helper store
+
 install_packages:
 	sudo apt update
 	sudo apt upgrade -y
