@@ -59,3 +59,5 @@ default-jdk
 dkms
 linux-headers-amd64
 hashcat
+inxi
+fastfetch
