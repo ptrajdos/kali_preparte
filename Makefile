@@ -36,7 +36,7 @@ $(NVIDIA_LEGACY_390_script):
 	chmod +x ${NVIDIA_LEGACY_390_script}
 
 nvidia_legacy_390: $(NVIDIA_LEGACY_390_script)
-	sudo ./${NVIDIA_LEGACY_390_script}
+	CC=gcc-12 CXX=g++-12 sudo ./${NVIDIA_LEGACY_390_script}
 
 
 nvidia_check:
