@@ -1,6 +1,7 @@
 ROOTDIR=$(realpath $(dir $(firstword $(MAKEFILE_LIST))))
 PACKAGES_FILE=${ROOTDIR}/kali_packages.txt
 NOUVEAU_BLACKLIST_FILE=/etc/modprobe.d/blacklist-nouveau.conf
+NVIDIA_LEGACY_390_script=legacy_390.sh
 
 ASDF_DIR= $(HOME)/.asdf
 PYTHON=python
@@ -28,7 +29,15 @@ install_packages:
 nvidia_driver: blacklist_nouveau
 	sudo apt update
 	sudo apt upgrade -y
-	sudo apt install nvidia-driver nvidia-cuda-toolkit -y
+	sudo apt install nvidia-driver nvidia-cuda-toolkit nvidia-detect -y
+
+$(NVIDIA_LEGACY_390_script):
+	wget 'https://download.nvidia.com/XFree86/Linux-x86_64/390.157/NVIDIA-Linux-x86_64-390.157.run' -O ${NVIDIA_LEGACY_390_script}
+	chmod +x ${NVIDIA_LEGACY_390_script}
+
+nvidia_legacy_390: $(NVIDIA_LEGACY_390_script)
+	sudo ./${NVIDIA_LEGACY_390_script}
+
 
 nvidia_check:
 	nvidia-smi
@@ -41,7 +50,7 @@ blacklist_nouveau: $(NOUVEAU_BLACKLIST_FILE)
 
 $(NOUVEAU_BLACKLIST_FILE):
 	echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
-	echo "options nouveau modeset=0" | sudo tee -a /etc/modprobe.d/blacklist-nouveau.conf
+	echo "options nouveau modeset=0\nalias nouveau off" | sudo tee -a /etc/modprobe.d/blacklist-nouveau.conf
 	sudo update-initramfs -u
 
 $(ASDF_DIR): install_packages git_cfg

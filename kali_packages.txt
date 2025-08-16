@@ -64,3 +64,4 @@ fastfetch
 valgrind
 kcachegrind
 valgrind-mpi
+google-android-platform-tools-installer
