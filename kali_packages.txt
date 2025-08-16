@@ -61,3 +61,6 @@ linux-headers-amd64
 hashcat
 inxi
 fastfetch
+valgrind
+kcachegrind
+valgrind-mpi

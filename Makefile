@@ -17,6 +17,8 @@ install: install_packages
 git_cfg:
 	git config --global core.editor "vim"
 	git config --global credential.helper store
+	git config --global user.email "pawel.trajdos@pwr.edu.pl"
+	git config --global user.name "ptrajdos"
 
 install_packages:
 	sudo apt update
@@ -27,6 +29,9 @@ nvidia_driver: blacklist_nouveau
 	sudo apt update
 	sudo apt upgrade -y
 	sudo apt install nvidia-driver nvidia-cuda-toolkit -y
+
+nvidia_check:
+	nvidia-smi
 
 zerotier:
 	curl -s https://install.zerotier.com | sudo bash
