@@ -89,7 +89,8 @@ filter_none()     { cat; }
 run_bench() {
     local cmd="$1" filter="$2" out filtered
     echo ">>> Running: $cmd" >&2
-    out=$(eval "$cmd" 2>&1)
+    # tee: show live output on the terminal while capturing it
+    out=$(eval "$cmd" 2>&1 | tee /dev/stderr)
     filtered=$(printf '%s\n' "$out" | "$filter")
     [ -z "$filtered" ] && filtered="$out"
     {

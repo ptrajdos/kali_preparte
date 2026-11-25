@@ -5,7 +5,7 @@
 # Usage: ./run_benchmarks.sh [output.md] [fio_test_dir]
 #   output.md     - result file (default: benchmark_<hostname>_<date>.md)
 #   fio_test_dir  - directory for fio test files (default: /tmp)
-# Env vars: SYSBENCH_TIME (default 60), STRESS_TIME (default 15)
+# Env vars: SYSBENCH_TIME (default 60), STRESS_TIME (default 15), FIO_TIME (default 3600)
 #
 # Supported OS: Linux, FreeBSD.
 # Required packages: sysbench fio stress-ng openssl
@@ -21,6 +21,7 @@ FIO_DIR="${2:-/tmp}"
 #      SYSBENCH_TIME=30 STRESS_TIME=10 ./run_benchmarks.sh
 SYSBENCH_TIME="${SYSBENCH_TIME:-60}"   # sysbench cpu / memory tests
 STRESS_TIME="${STRESS_TIME:-15}"       # stress-ng tests
+FIO_TIME="${FIO_TIME:-3600}"           # max time per fio test (stops earlier if --size is done)
 
 # ---- OS-specific settings ---------------------------------------------------
 case "$(uname -s)" in
@@ -66,7 +67,8 @@ filter_none()     { cat; }
 run_bench() {
     local cmd="$1" filter="$2" out filtered
     echo ">>> Running: $cmd" >&2
-    out=$(eval "$cmd" 2>&1)
+    # tee: show live output on the terminal while capturing it
+    out=$(eval "$cmd" 2>&1 | tee /dev/stderr)
     filtered=$(printf '%s\n' "$out" | "$filter")
     # If the filter matched nothing (e.g. an error), keep the raw output.
     [ -z "$filtered" ] && filtered="$out"
@@ -98,9 +100,9 @@ run_bench "sysbench memory --memory-block-size=256M --memory-total-size=0 --memo
 run_bench "sysbench memory --memory-block-size=256M --memory-total-size=0 --memory-oper=read --memory-scope=local --threads=\$($NPROC_CMD) --time=$SYSBENCH_TIME run" filter_sysbench
 
 # ---- Disk (fio) -------------------------------------------------------------
-run_bench "fio --name=seq_test --directory=$FIO_DIR --size=4G --bs=1M --rw=readwrite --rwmixread=50 --direct=1 --ioengine=$IOENGINE --iodepth=16 --numjobs=1 --group_reporting" filter_fio
+run_bench "fio --name=seq_test --directory=$FIO_DIR --size=4G --bs=1M --rw=readwrite --rwmixread=50 --direct=1 --ioengine=$IOENGINE --iodepth=16 --numjobs=1 --runtime=$FIO_TIME --group_reporting" filter_fio
 rm -f "$FIO_DIR"/seq_test.*
-run_bench "fio --name=rand4k_test --directory=$FIO_DIR --size=4G --bs=4k --rw=randrw --rwmixread=70 --direct=1 --ioengine=$IOENGINE --iodepth=32 --numjobs=4 --group_reporting" filter_fio
+run_bench "fio --name=rand4k_test --directory=$FIO_DIR --size=4G --bs=4k --rw=randrw --rwmixread=70 --direct=1 --ioengine=$IOENGINE --iodepth=32 --numjobs=4 --runtime=$FIO_TIME --group_reporting" filter_fio
 rm -f "$FIO_DIR"/rand4k_test.*
 
 # ---- CPU stress (stress-ng) -------------------------------------------------
