@@ -67,3 +67,7 @@ valgrind-mpi
 google-android-platform-tools-installer
 libglvnd-core-dev
 libglvnd-dev
+sysbench
+fio
+stress-ng
+
